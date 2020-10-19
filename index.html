@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>canvas</title>
+    <style>
+        #imageFile, #downloadLink {
+            display: none;
+        }
+        .canvas-container {
+            width: 100%;
+            height: 100%;
+        }
+        #tools{
+            position: fixed;
+            left: 20%;
+            bottom: 30px;
+            width: 50%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+        #operations button{
+            width: 30px;
+            height: 30px;
+            border: none;
+            outline: none;
+            background-size: 20px 20px;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-color: #fff;
+            margin: 0 6px;
+            transition: 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        #operations button.pencil{
+            background-image: url('./image/pen.png');
+        }
+        #operations button.rectangle{
+            background-image: url('./image/rect.png');
+        }
+        #operations button.circle{
+            background-image: url('./image/circle.png');
+        }
+        #operations button.font{
+            background-image: url('./image/font.png');
+        }
+        #operations button.arrow{
+            background-image: url('./image/arrow.png');
+        }
+        #operations button.redo{
+            background-image: url('./image/redo.png');
+        }
+        #operations button.undo{
+            background-image: url('./image/undo.png');
+        }
+        #operations button.eraser{
+            background-image: url('./image/eraser.png');
+        }
+        #operations button.clear{
+            background-image: url('./image/clear.png');
+        }
+        #operations button.save{
+            background-image: url('./image/save.png');
+        }
+        #operations button.color{
+            background-image: url('./image/color.png');
+        }
+        #operations .palette{
+            width:0px;
+            height:30px;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            left:-30px;
+        }
+        #operations .range{
+            cursor: pointer;
+            height: 1px;
+            position: relative;
+            top: -10px;
+        }
+        .font-detail {
+            display: none;
+            position: absolute;
+            left: 20%;
+            top: -100%;
+            font-size: 14px;
+            color: darkgray;
+            border: 1px solid #81A4BD;
+            padding: 1%;
+            border-radius: 5px;
+        }
+        .font-detail select {
+            border: 1px solid #e5e5e5;
+            appearance: none;
+            -moz-appearance: none;
+            -webkit-appearance: none;
+            margin-left:5px;
+            padding:3px;
+        }
+        .font-detail select:focus {
+           outline: none;
+        }
+        .font-detail select[name="font"] {
+            width:70px;
+            margin-right:10px;
+        }
+        .font-detail select[name="size"] {
+            width:50px;
+            margin-right:10px;
+        }
+        .textBox{
+            width: 200px;
+            min-height: 20px;
+            _height: 120px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 3px;
+            outline: 0;
+            border: 1px solid #a0b3d6;
+            font-size: 12px;
+            word-wrap: break-word;
+            overflow-x: hidden;
+            overflow-y: auto;
+            _overflow-y: visible;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="canvas-container" id="canvas-container">
+    <canvas id="canvas"></canvas>
+<!--    <textarea id="textBox" style='width:200px;border-style:dashed;resize:none;background:transparent;position:absolute;display:block;' ></textarea>-->
+    <div id="tools">
+        <div id="operations">
+            <button type="button" id="pencil" class="pencil" title="画笔"></button>
+            <button type="button" id="rectangle" class="rectangle" title="矩形"></button>
+            <button type="button" id="circle" class="circle" title="圆形"></button>
+            <button type="button" id="font" class="font" title="文字"></button>
+            <button type="button" id="arrow" class="arrow" title="箭头"></button>
+            <button type="button" id="eraser" class="eraser" title="橡皮擦"></button>
+            <button type="button" id="undo" class="undo" title="撤销"></button>
+            <button type="button" id="redo" class="redo" title="重做"></button>
+            <button type="button" id="clear" class="clear" title="清屏"></button>
+            <button type="button" id="save" class="save" title="保存"></button>
+            <button type="button" id="color" class="color"></button>
+            <input type="color" id="palette" class="palette" />
+            <input type="range" class="range" id="lineWidth" min="1" max="20" value="1" />
+            <input type="file" id="imageFile" name="image"/>
+            <a id="downloadLink"></a>
+        </div>
+        <div class="font-detail" id="fontDetail">
+            字体<select name="font" id="fontFamily">
+                <option value="SimSun">宋体</option>
+                <option value="FangSong">仿宋</option>
+                <option value="SimHei">黑体</option>
+                <option value="Microsoft Yahei" selected>微软雅黑</option>
+                <option value="KaiTi">楷体</option>
+                <option value="sans-serif">sans-serif</option>
+                <option value="serif">serif</option>
+                <option value="cursive">cursive</option>
+                <option value="system-ui">system-ui</option>
+            </select>
+            大小<select name="size" id="fontSize">
+                <option value="12px">12px</option>
+                <option value="14px" selected>14px</option>
+                <option value="18px">18px</option>
+                <option value="20px">20px</option>
+                <option value="24px">24px</option>
+                <option value="28px">28px</option>
+            </select>
+        </div>
+    </div>
+    <!-- 模拟文本域 -->
+    <div id="textBox" class="textBox" contenteditable="true" style="width:200px;border-style:dashed;resize:none;background:transparent;position:absolute;display:none;"></div>
+</div>
+
+<script src="./js/canvs.js"></script>
+<script src="./js/jquery-1.11.0.js"></script>
+
+</body>
+</html>
